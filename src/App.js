@@ -233,6 +233,7 @@ function App() {
   async function userSendChat() {
 
     const provider = new ethers.providers.Web3Provider(window.ethereum)
+    if(!receiver) return alert("Please input Receiver address!");
 
     // MetaMask requires requesting permission to connect users accounts
     await provider.send("eth_requestAccounts", []);
@@ -259,7 +260,7 @@ function App() {
     const response = await PushAPI.chat.send({
       messageContent: message,
       messageType: 'Text', // can be "Text" | "Image" | "File" | "GIF"
-      receiverAddress: '0xfB5C5f3d07ac7551c765E0dB128738755A1a7Efe',
+      receiverAddress: receiver,
 
       signer: signer,
       pgpPrivateKey: pgpDecrpyptedPvtKey,
@@ -370,17 +371,7 @@ function App() {
       account: `eip155:${address}`,
       conversationId: `${recieverAdd}`, // 2nd address
       env: 'staging',
-    });
-
-    // Actual API
-    // const response = await PushAPI.chat.latest({
-    //   threadhash: conversationHash.threadHash, // get conversation hash from conversationHash function and send the response threadhash here
-    //   account: `eip155:${address}`,
-    //   toDecrypt: true,
-    //   pgpPrivateKey: pgpDecrpyptedPvtKey,
-    //   env: 'staging',
-    // });
-
+    }); 
 
     const chatHistory = await PushAPI.chat.history({
       threadhash: conversationHash.threadHash,
@@ -466,8 +457,7 @@ function App() {
 
       // Decrypt PGP Key
       const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
-        encryptedPGPPrivateKey: user.encryptedPrivateKey,
-
+        encryptedPGPPrivateKey: user.encryptedPrivateKey, 
         signer: '0xfB5C5f3d07ac7551c765E0dB128738755A1a7Efe',
       });
 
