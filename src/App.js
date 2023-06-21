@@ -65,7 +65,7 @@ function App() {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [users, setUsers] = useState([]);
-  const [selectUser, setSelectUser]=useState("");
+  const [selectUser, setSelectUser]=useState(null);
   const [userChatMessages, setUserChatMessages]= useState([]);
 
   const shortAddress = (addr) =>
@@ -231,9 +231,9 @@ function App() {
   }
 
   async function userSendChat() {
+    if(!selectUser || !receiver) return alert("Please input reciever address!");
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    if(!receiver) return alert("Please input Receiver address!");
+    const provider = new ethers.providers.Web3Provider(window.ethereum) 
 
     // MetaMask requires requesting permission to connect users accounts
     await provider.send("eth_requestAccounts", []);
@@ -260,7 +260,7 @@ function App() {
     const response = await PushAPI.chat.send({
       messageContent: message,
       messageType: 'Text', // can be "Text" | "Image" | "File" | "GIF"
-      receiverAddress: receiver,
+      receiverAddress: selectUser !== null ?  selectUser : receiver,
 
       signer: signer,
       pgpPrivateKey: pgpDecrpyptedPvtKey,
@@ -493,10 +493,9 @@ function App() {
     await delay(4000);
   } 
 
-  const selectCurrentUser= async(e)=>{
-    console.log(e,"ee");
-    // setSelectUser(e)
+  const selectCurrentUser= async(e)=>{ 
     const id = e?.wallets;
+    setSelectUser(id);
    const conversation= await userLatestChat(id)
   }
 
